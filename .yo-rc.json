@@ -1,0 +1,58 @@
+{
+  "generator-jhipster": {
+    "blueprints": [
+      {
+        "name": "generator-jhipster-quasar",
+        "version": "0.9.9"
+      }
+    ],
+    "otherModules": [
+      {
+        "name": "generator-jhipster-quasar",
+        "version": "0.9.9"
+      }
+    ],
+    "applicationType": "monolith",
+    "baseName": "infra_controller",
+    "jhipsterVersion": "7.1.0",
+    "skipClient": false,
+    "skipServer": false,
+    "skipUserManagement": false,
+    "skipCheckLengthOfIdentifier": false,
+    "skipFakeData": false,
+    "jhiPrefix": "jhi",
+    "entitySuffix": "",
+    "dtoSuffix": "DTO",
+    "testFrameworks": ["cypress", "protractor", "gatling", "cucumber"],
+    "pages": [],
+    "creationTimestamp": 1624874006682,
+    "serviceDiscoveryType": false,
+    "reactive": false,
+    "authenticationType": "jwt",
+    "packageName": "io.github.rajpratik71.infra_controller",
+    "serverPort": "8080",
+    "cacheProvider": "ehcache",
+    "enableHibernateCache": true,
+    "databaseType": "sql",
+    "devDatabaseType": "h2Memory",
+    "prodDatabaseType": "postgresql",
+    "buildTool": "maven",
+    "serverSideOptions": ["websocket:spring-websocket", "messageBroker:kafka", "enableSwaggerCodegen:true"],
+    "websocket": "spring-websocket",
+    "searchEngine": false,
+    "messageBroker": "kafka",
+    "enableSwaggerCodegen": true,
+    "clientFramework": "quasar",
+    "enableTranslation": true,
+    "nativeLanguage": "en",
+    "packageFolder": "io/github/rajpratik71/infra_controller",
+    "jwtSecretKey": "YzZkMzYyYmEyM2RhNTUxNDAxNjZlNjFkODRhMmM0ZmNlZTllYjIwNDZiNzM5ZDA0Njc1NjkxNjIxMTIwMGRiODcxOTg0YmE2N2Y5MDZjOTFmMmMyNmY2ZTdlNmY5NDQwYWE4ZmFhODZkOGI1YjI4NTJkNGM4ZWE5OTVhYjAwZTM=",
+    "clientPackageManager": "npm",
+    "clientTheme": "none",
+    "clientThemeVariant": "",
+    "withAdminUi": true,
+    "languages": ["en"],
+    "lastLiquibaseTimestamp": 1624875274000,
+    "entities": ["DockerHosts"]
+  }
+}

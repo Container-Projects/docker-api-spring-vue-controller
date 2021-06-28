@@ -1,0 +1,99 @@
+<template>
+  <q-page class="q-pa-md flex flex-center">
+    <div style="min-width: 300px">
+      <div class="q-pa-md q-gutter-md">
+        <q-badge
+          v-bind:key="authority"
+          v-for="authority in account.data.authorities"
+          color="primary"
+        >
+          {{ authority }}
+        </q-badge>
+      </div>
+      <q-form
+        @submit="onSubmit"
+        class="q-gutter-md"
+      >
+        <q-input
+          v-model="account.data.firstName"
+          :label="$t('userManagement.firstName')"
+          :rules="[val => !!val]"
+        />
+        <q-input
+          v-model="account.data.lastName"
+          :label="$t('userManagement.lastName')"
+          :rules="[val => !!val]"
+        />
+        <q-input
+          v-model="account.data.email"
+          type="email"
+          :label="$t('userManagement.email')"
+          :rules="[val => !!val]"
+        />
+        <q-select
+          v-model="account.data.langKey"
+          :options="langObjects"
+          option-value="key"
+          option-label="value"
+          emit-value
+          map-options
+          :label="$t('userManagement.langKey')"
+          :rules="[val => !!val]"
+        />
+        <div class="flex justify-between">
+          <q-btn
+            type="submit"
+            color="primary"
+            :label="$t('entity.action.save')"
+          />
+          <q-btn
+            to="/"
+            flat
+            color="primary"
+            :label="$t('entity.action.back')"
+          />
+        </div>
+      </q-form>
+    </div>
+  </q-page>
+</template>
+
+<script>
+import { api } from 'boot/axios';
+import { loadTranslation } from 'boot/i18n';
+import { defineComponent, reactive } from 'vue';
+import { useRouter } from 'vue-router';
+import { langObjects } from '../constants/i18nConstants';
+
+export default defineComponent({
+  name: 'PageAccount',
+
+  setup() {
+    const router = useRouter();
+    const account = reactive({
+      data: {
+        firstName: null,
+        lastName: null,
+        email: null,
+        langKey: null,
+        authorities: [],
+      },
+    });
+
+    api.get('/api/account').then(accountResponse => {
+      account.data = accountResponse.data;
+    });
+
+    return {
+      account,
+      langObjects,
+      onSubmit() {
+        api.post('/api/account', account.data).then(() => {
+          loadTranslation(account.data.langKey);
+          router.push('/');
+        });
+      },
+    };
+  },
+});
+</script>

@@ -1,0 +1,26 @@
+{
+  "infraControllerApp": {
+    "dockerHosts": {
+      "home": {
+        "title": "Docker Hosts",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Docker Hosts",
+        "createOrEditLabel": "Create or edit a Docker Hosts",
+        "notFound": "No Docker Hosts found"
+      },
+      "created": "A new Docker Hosts is created with identifier {{ param }}",
+      "updated": "A Docker Hosts is updated with identifier {{ param }}",
+      "deleted": "A Docker Hosts is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Docker Hosts {{ id }}?"
+      },
+      "detail": {
+        "title": "Docker Hosts"
+      },
+      "id": "ID",
+      "name": "Name",
+      "ipaddress": "Ipaddress",
+      "tlsenabled": "Tlsenabled"
+    }
+  }
+}

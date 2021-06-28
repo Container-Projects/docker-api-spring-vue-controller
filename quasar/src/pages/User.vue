@@ -1,0 +1,135 @@
+<template>
+  <q-page class="q-pa-md flex flex-center">
+    <q-form
+      @submit="onSubmit"
+      class="q-gutter-md"
+      style="min-width: 300px"
+    >
+      <q-input
+        v-model="account.data.login"
+        :label="$t('userManagement.login')"
+        :rules="[val => !!val]"
+      />
+      <q-input
+        v-model="account.data.firstName"
+        :label="$t('userManagement.firstName')"
+        :rules="[val => !!val]"
+      />
+      <q-input
+        v-model="account.data.lastName"
+        :label="$t('userManagement.lastName')"
+        :rules="[val => !!val]"
+      />
+      <q-input
+        v-model="account.data.email"
+        type="email"
+        :label="$t('userManagement.email')"
+        :rules="[val => !!val]"
+      />
+      <q-select
+        v-model="account.data.langKey"
+        :options="langObjects"
+        option-value="key"
+        option-label="value"
+        emit-value
+        map-options
+        :label="$t('userManagement.langKey')"
+        :rules="[val => !!val]"
+      />
+      <q-select
+        filled
+        v-model="account.data.authorities"
+        :options="availableRoles"
+        :label="$t('userManagement.profiles')"
+        multiple
+        emit-value
+        map-options
+      >
+        <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
+          <q-item v-bind="itemProps">
+            <q-item-section>
+              <q-item-label v-html="opt.label"></q-item-label>
+            </q-item-section>
+            <q-item-section side>
+              <q-toggle
+                :model-value="selected"
+                @update:modelValue="toggleOption(opt)"
+              />
+            </q-item-section>
+          </q-item>
+        </template>
+      </q-select>
+      <div class="flex justify-between">
+        <q-btn
+          type="submit"
+          color="primary"
+          :label="$t('entity.action.save')"
+        />
+        <q-btn
+          to="/users"
+          flat
+          color="primary"
+          :label="$t('entity.action.back')"
+        />
+      </div>
+    </q-form>
+  </q-page>
+</template>
+
+<script>
+import { api } from 'boot/axios';
+import { defineComponent, reactive } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { langObjects } from '../constants/i18nConstants';
+
+export default defineComponent({
+  name: 'PageUser',
+
+  setup() {
+    const router = useRouter();
+    const route = useRoute();
+
+    const account = reactive({
+      data: {
+        id: null,
+        login: null,
+        firstName: null,
+        lastName: null,
+        email: null,
+        langKey: null,
+        authorities: [],
+      },
+    });
+
+    if (route.params.login) {
+      api.get(`/api/admin/users/${route.params.login}`).then(response => {
+        account.data = response.data;
+      });
+    }
+
+    return {
+      account,
+      langObjects,
+      availableRoles: [
+        {
+          label: 'ROLE_ADMIN',
+          value: 'ROLE_ADMIN',
+        },
+        {
+          label: 'ROLE_USER',
+          value: 'ROLE_USER',
+        },
+      ],
+      onSubmit() {
+        api({
+          method: account.data.id ? 'put' : 'post',
+          url: '/api/admin/users',
+          data: account.data,
+        }).then(() => {
+          router.push('/users');
+        });
+      },
+    };
+  },
+});
+</script>

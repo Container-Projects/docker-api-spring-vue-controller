@@ -1,0 +1,245 @@
+<template>
+  <q-ajax-bar
+    ref="bar"
+    :reverse="true"
+    position="left"
+    color="primary"
+    size="10px"
+  />
+  <q-layout view="lHh Lpr lFf">
+    <q-header elevated>
+      <q-toolbar>
+        <q-btn
+          v-if="isAuthenticated"
+          flat
+          dense
+          round
+          icon="menu"
+          aria-label="Menu"
+          @click="toggleLeftDrawer"
+        />
+        <q-toolbar-title>
+          infra_controller
+        </q-toolbar-title>
+        <q-btn
+          flat
+          round
+          @click="changeTheme()"
+          :icon="$q.dark.isActive ? 'dark_mode' : 'light_mode'"
+        />
+        <div>Quasar v{{ $q.version }}</div>
+      </q-toolbar>
+    </q-header>
+
+    <q-drawer
+      v-model="data.leftDrawerOpen"
+      show-if-above
+      :mini="data.miniState"
+      @mouseover="data.miniState = false"
+      @mouseout="data.miniState = true"
+      mini-to-overlay
+      :width="250"
+      :breakpoint="500"
+      bordered
+      v-if="store.state.auth.account"
+    >
+      <q-item
+        to="/account"
+        clickable
+        v-ripple
+        :active="link === 'account'"
+        @click="link = 'account'"
+        active-class="bg-blue-1 text-blue-10"
+      >
+        <q-item-section avatar>
+          <q-icon name="account_circle" />
+        </q-item-section>
+        <q-item-section>
+          {{ $t('global.menu.account.main') }}
+        </q-item-section>
+      </q-item>
+      <q-item
+        to="/password"
+        clickable
+        v-ripple
+        :active="link === 'password'"
+        @click="link = 'password'"
+        active-class="bg-blue-1 text-blue-10"
+      >
+        <q-item-section avatar>
+          <q-icon name="password" />
+        </q-item-section>
+        <q-item-section>
+          {{ $t('global.menu.account.password') }}
+        </q-item-section>
+      </q-item>
+      <q-item
+        to="/users"
+        clickable
+        v-ripple
+        :active="link === 'users'"
+        @click="link = 'users'"
+        active-class="bg-blue-1 text-blue-10"
+        v-if="store.getters['auth/hasRoleAdmin']"
+      >
+        <q-item-section avatar>
+          <q-icon name="people" />
+        </q-item-section>
+        <q-item-section>
+          {{ $t('global.menu.admin.userManagement') }}
+        </q-item-section>
+      </q-item>
+      <q-item
+        to="/configuration"
+        clickable
+        v-ripple
+        :active="link === 'configuration'"
+        @click="link = 'configuration'"
+        active-class="bg-blue-1 text-blue-10"
+        v-if="store.getters['auth/hasRoleAdmin']"
+      >
+        <q-item-section avatar>
+          <q-icon name="settings" />
+        </q-item-section>
+        <q-item-section>
+          {{ $t('global.menu.admin.configuration') }}
+        </q-item-section>
+      </q-item>
+      <q-item
+        to="/health"
+        clickable
+        v-ripple
+        :active="link === 'health'"
+        @click="link = 'health'"
+        active-class="bg-blue-1 text-blue-10"
+        v-if="store.getters['auth/hasRoleAdmin']"
+      >
+        <q-item-section avatar>
+          <q-icon name="health_and_safety" />
+        </q-item-section>
+        <q-item-section>
+          {{ $t('global.menu.admin.health') }}
+        </q-item-section>
+      </q-item>
+      <q-item
+        to="/metrics"
+        clickable
+        v-ripple
+        :active="link === 'metrics'"
+        @click="link = 'metrics'"
+        active-class="bg-blue-1 text-blue-10"
+        v-if="store.getters['auth/hasRoleAdmin']"
+      >
+        <q-item-section avatar>
+          <q-icon name="analytics" />
+        </q-item-section>
+        <q-item-section>
+          {{ $t('global.menu.admin.metrics') }}
+        </q-item-section>
+      </q-item>
+      <q-item
+        to="/logs"
+        clickable
+        v-ripple
+        :active="link === 'logs'"
+        @click="link = 'logs'"
+        active-class="bg-blue-1 text-blue-10"
+        v-if="store.getters['auth/hasRoleAdmin']"
+      >
+        <q-item-section avatar>
+          <q-icon name="text_snippet" />
+        </q-item-section>
+        <q-item-section>
+          {{ $t('global.menu.admin.logs') }}
+        </q-item-section>
+      </q-item>
+      <q-item
+        to="/docs"
+        clickable
+        v-ripple
+        :active="link === 'docs'"
+        @click="link = 'docs'"
+        active-class="bg-blue-1 text-blue-10"
+        v-if="store.getters['auth/hasRoleAdmin']"
+      >
+        <q-item-section avatar>
+          <q-icon name="menu_book" />
+        </q-item-section>
+        <q-item-section>
+          {{ $t('global.menu.admin.apidocs') }}
+        </q-item-section>
+      </q-item>
+      <q-item
+        clickable
+        v-ripple
+        @click="logout"
+      >
+        <q-item-section avatar>
+          <q-icon name="logout" />
+        </q-item-section>
+        <q-item-section>
+          {{ $t('global.menu.account.logout') }}
+        </q-item-section>
+      </q-item>
+    </q-drawer>
+
+    <q-page-container>
+      <router-view />
+    </q-page-container>
+  </q-layout>
+</template>
+
+<script>
+import { LocalStorage, useQuasar } from 'quasar';
+import { computed, defineComponent, reactive } from 'vue';
+import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
+import { authLogout } from '../auth/authentication';
+
+export default defineComponent({
+  name: 'MainLayout',
+
+  setup() {
+    const store = useStore();
+    const router = useRouter();
+    const $q = useQuasar();
+
+    const isAuthenticatedGetter = () => store.getters['auth/isAuthenticated'];
+    const leftDrawerOpen = isAuthenticatedGetter();
+    const data = reactive({ leftDrawerOpen, miniState: true });
+    const link = reactive({});
+
+    if (LocalStorage.has('dark-mode')) {
+      $q.dark.set(LocalStorage.getItem('dark-mode'));
+    } else {
+      $q.dark.set($q.dark.mode);
+    }
+
+    store.watch(
+      () => isAuthenticatedGetter(),
+      newValue => {
+        data.leftDrawerOpen = newValue;
+      }
+    );
+
+    return {
+      data,
+      link,
+      store,
+      isAuthenticated: computed(() => isAuthenticatedGetter()),
+      toggleLeftDrawer() {
+        data.leftDrawerOpen = !data.leftDrawerOpen;
+      },
+      changeTheme() {
+        $q.dark.toggle();
+        LocalStorage.set('dark-mode', $q.dark.mode);
+      },
+      logout() {
+        data.leftDrawerOpen = false;
+        data.miniState = true;
+        authLogout(store, router);
+      },
+    };
+  },
+});
+</script>

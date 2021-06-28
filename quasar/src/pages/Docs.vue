@@ -1,0 +1,19 @@
+<style scoped>
+iframe[seamless] {
+  background-color: transparent;
+  border: 0px none transparent;
+  padding: 0px;
+  overflow: hidden;
+}
+</style>
+<template>
+  <iframe
+    src="/swagger-ui/index.html"
+    width="100%"
+    height="900"
+    seamless
+    target="_top"
+    title="Swagger UI"
+    class="border-0"
+  ></iframe>
+</template>
